@@ -38,11 +38,7 @@
       android:paddingTop="5.0dip"
       android:weightSum="3"
       android:layout_below="@+id/toolbar"
-      android:layout_alignParentRight="true"
-      android:layout_alignParentEnd="true"
-      android:layout_marginRight="10dp"
-      android:layout_marginEnd="10dp"
-      android:layout_marginTop="68dp">
+      android:layout_centerHorizontal="true">
 
     <ImageButton
         android:id="@+id/Snap"
@@ -54,6 +50,11 @@
         android:background="@drawable/circle"
         app:srcCompat="@drawable/ic_photo_camera" />
 
+    <View
+        android:layout_width="20dp"
+        android:layout_height="270dp"
+        android:visibility="invisible" />
+
     <ImageButton
         android:id="@+id/Upload"
         android:layout_width="0dp"
@@ -61,12 +62,6 @@
         android:layout_weight="1"
         android:background="@drawable/circle"
         app:srcCompat="@drawable/ic_photo_gallery" />
-
-    <View
-        android:layout_width="20dp"
-        android:layout_height="270dp"
-        android:visibility="invisible" />
-
   </LinearLayout>
 
 
