@@ -1,0 +1,18 @@
+<resources>
+    <string name="clarifai_id">aOLZlZ8mkSXied8Z0TzVfbqoN5FpmEapZ-6slfUh</string>
+    <string name="clarifai_secret">kyO0vc95d1gqkxpafBT0ensZ_cTDE4Lw-DCUfKO5</string>
+
+    <string name="app_name">Yummy!</string>
+
+    <string name="error_external_storage_permission_not_granted">You must accept this permission so we can upload your images!</string>
+
+    <string name="error_while_contacting_api">Error while contacting Clarifai API</string>
+    <string name="no_results_from_api">API did not return any results</string>
+
+    <string name="upload_image_hint">Click the button in the bottom-right corner to upload an image!</string>
+    <string name="title_activity_recepie">RecepieActivity</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+</resources>
