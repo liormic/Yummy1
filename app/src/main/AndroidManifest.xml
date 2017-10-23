@@ -5,7 +5,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.CAMERA" />
-
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-feature
         android:name="android.hardware.camera"
         android:required="true" />
@@ -17,24 +17,37 @@
         android:label="Yummy!"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".activity.RecognizeConceptsActivity"
-            android:theme="@style/AppTheme"
-
-
-            >
-
+        <activity
+            android:name=".activity.RecognizeConceptsActivity"
+            android:theme="@style/AppTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
-
         </activity>
         <activity
             android:name=".activity.RecepieActivity"
             android:label="@string/title_activity_recepie"
+            android:theme="@style/AppTheme" />
+        <activity
+            android:name=".activity.History"
+            android:label="@string/title_activity_history"
             android:theme="@style/AppTheme"></activity>
+
+        <provider
+            android:name="android.support.v4.content.FileProvider"
+            android:authorities="com.clarifai.android.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths"></meta-data>
+        </provider>
+
+
+
+
     </application>
 
 </manifest>

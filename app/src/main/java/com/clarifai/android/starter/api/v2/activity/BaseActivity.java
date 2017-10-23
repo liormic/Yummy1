@@ -38,14 +38,14 @@ public abstract class BaseActivity extends AppCompatActivity {
   //@BindView(R.id.content_root) protected View root;
 
   private Unbinder unbinder;
-
+  static final int Constants = 99;
   @Override
   protected void onCreate(@Nullable Bundle savedInstanceState) {
 
     super.onCreate(savedInstanceState);
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
       RxPermissions.getInstance(this)
-          .request(Manifest.permission.READ_EXTERNAL_STORAGE,Manifest.permission.CAMERA)
+          .request(Manifest.permission.READ_EXTERNAL_STORAGE,Manifest.permission.CAMERA,Manifest.permission.WRITE_EXTERNAL_STORAGE)
 
           .subscribe(new Action1<Boolean>() {
             @Override public void call(Boolean granted) {
@@ -116,6 +116,10 @@ public abstract class BaseActivity extends AppCompatActivity {
    */
   @LayoutRes
   protected abstract int layoutRes();
+
+
+
+
 
   private Drawer.OnDrawerItemClickListener goToActivityListener(
       @NonNull final Class<? extends Activity> activityClass) {

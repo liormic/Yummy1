@@ -8,65 +8,161 @@
     android:layout_height="match_parent">
 
 
-  <android.support.v7.widget.Toolbar
-      android:id="@+id/toolbar"
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:layout_weight="1"
-      android:background="@android:color/holo_red_light"
-      android:minHeight="?attr/actionBarSize"
-      android:theme="?attr/actionBarTheme" />
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true">
 
-  <ImageView
-      android:id="@+id/imageView2"
-      android:layout_width="wrap_content"
-      android:layout_height="match_parent"
-      android:layout_above="@+id/linearLayout2"
-      android:layout_alignParentTop="true"
-      app:srcCompat="@drawable/logo2" />
+        <ImageView
+            android:id="@+id/imageView2"
+            android:layout_width="250dp"
+            android:layout_height="150dp"
+            android:scaleType="fitCenter"
+            app:srcCompat="@drawable/logo2"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true" />
+    </RelativeLayout>
 
     <LinearLayout
         android:id="@+id/linearLayout2"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
+        android:layout_height="400dp"
+
         android:gravity="center"
-        android:orientation="horizontal"
-        android:paddingBottom="1.0dip"
-        android:paddingLeft="4.0dip"
-        android:paddingRight="4.0dip"
-        android:paddingTop="5.0dip"
+        android:orientation="vertical"
+
         android:weightSum="3"
-        android:layout_below="@+id/toolbar"
+        android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_marginLeft="17dp"
-        android:layout_marginStart="17dp"
-        android:layout_marginTop="91dp">
+        android:layout_alignParentStart="true">
 
-        <ImageButton
-            android:id="@+id/Snap"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
+        <RelativeLayout
+            android:id="@+id/Layoutphoto"
+            android:layout_width="match_parent"
+            android:layout_height="135dp"
+            android:layout_above="@+id/Layoutgallery"
             android:layout_weight="1"
+            android:background="#B3ff3770"
+            android:onClick="dispatchTakePictureIntent"
+            android:orientation="horizontal"
+            android:weightSum="1">
 
+            <ImageButton
+                android:id="@+id/Snap"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:background="@null"
+                android:scaleType="fitCenter"
+                app:srcCompat="@drawable/if_camera_1296364"
+                android:layout_centerVertical="true"
+                android:layout_toLeftOf="@+id/SnapText"
+                android:layout_toStartOf="@+id/SnapText" />
 
-            android:background="@drawable/circle"
-            app:srcCompat="@drawable/ic_photo_camera" />
+            <TextView
+                android:id="@+id/SnapText"
+                android:layout_width="200dp"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:layout_gravity="center_vertical|center_horizontal|center"
+                android:ems="10"
+                android:gravity="center_horizontal|center"
+                android:text="Snap a picture"
+                android:textAlignment="center"
+                android:textColor="@android:color/background_light"
+                android:textSize="24sp" />
+        </RelativeLayout>
 
-        <View
-            android:layout_width="20dp"
-            android:layout_height="270dp"
-            android:visibility="invisible" />
-
-        <ImageButton
-            android:id="@+id/Upload"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
+        <RelativeLayout
+            android:id="@+id/Layoutgallery"
+            android:layout_width="match_parent"
+            android:layout_height="135dp"
+            android:layout_below="@+id/Layoutphoto"
             android:layout_weight="1"
-            android:background="@drawable/circle"
-            app:srcCompat="@drawable/ic_photo_gallery" />
+            android:background="#b317b9ff"
+            android:orientation="horizontal"
+            android:onClick="pickImage"
+            android:weightSum="1">
+
+            <ImageButton
+                android:id="@+id/upload"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_centerVertical="true"
+                android:layout_toLeftOf="@+id/UploadText"
+                android:layout_toStartOf="@+id/UploadText"
+                android:background="@null"
+                android:scaleType="fitCenter"
+                app:srcCompat="@drawable/if_gallery_1646013" />
+
+            <TextView
+                android:id="@+id/UploadText"
+                android:layout_width="200dp"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:layout_gravity="center"
+                android:ems="10"
+                android:text="Upload a picture"
+                android:textAlignment="center"
+                android:textColor="@android:color/background_light"
+                android:textSize="24sp" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/Layouthistory"
+            android:layout_width="match_parent"
+            android:onClick="History"
+            android:layout_height="135dp"
+            android:layout_below="@+id/Layoutgallery"
+
+            android:layout_weight="1"
+            android:background="#B337ff8e"
+            android:orientation="horizontal"
+            android:weightSum="1">
+
+            <ImageButton
+                android:id="@+id/imageButton2"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:background="@null"
+                android:scaleType="fitCenter"
+                app:srcCompat="@drawable/if_images_379462"
+                android:layout_centerVertical="true"
+                android:layout_toLeftOf="@+id/historyText"
+                android:layout_toStartOf="@+id/historyText" />
+               " />
+
+            <TextView
+                android:id="@+id/historyText"
+                android:layout_width="200dp"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:layout_gravity="center"
+                android:ems="10"
+                android:text="History"
+                android:textAlignment="center"
+                android:textColor="@android:color/background_light"
+                android:textSize="24sp" />
+
+        </RelativeLayout>
+
+
     </LinearLayout>
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="?android:attr/progressBarStyleLarge"
+
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="99dp"
+        android:layout_alignTop="@+id/linearLayout2"
+        android:layout_centerHorizontal="true" />
 
 
 </RelativeLayout>
