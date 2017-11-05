@@ -4,14 +4,14 @@ buildscript {
     }
     dependencies {
         classpath(
-                'com.android.tools.build:gradle:2.3.3',
-                "com.neenbedankt.gradle.plugins:android-apt:1.8",
+                'com.android.tools.build:gradle:3.0.0',
+
         )
     }
 }
 
 apply plugin: "com.android.application"
-apply plugin: "com.neenbedankt.android-apt"
+
 
 repositories {
     jcenter()
@@ -19,7 +19,7 @@ repositories {
 
 android {
     compileSdkVersion 24
-    buildToolsVersion '25.0.0'
+    buildToolsVersion '26.0.2'
     defaultConfig {
         applicationId "com.clarifai.android.starter.api.v2"
         minSdkVersion 15
@@ -30,7 +30,6 @@ android {
     lintOptions { lintConfig rootProject.file('gradle/lint.xml') }
     // needed to suppress Okio's lint errors
 }
-
 dependencies {
     compile(
             "com.android.support:appcompat-v7:24.2.1",
@@ -40,7 +39,7 @@ dependencies {
             "com.clarifai.clarifai-api2:core:2.0.2",
 
             // For logging our HTTP outbound + inbound data
-            "com.jakewharton.timber:timber:4.3.0",
+             'com.jakewharton:butterknife:8.8.1',
             "com.squareup.okhttp3:logging-interceptor:3.4.1",
             'com.android.support:cardview-v7:21.0.+',
             // For runtime permissions on Marshmallow and above
@@ -49,11 +48,11 @@ dependencies {
 
             'com.squareup.picasso:picasso:2.5.2',
             'com.android.support:cardview-v7:24.2.1',
-            'com.jakewharton:butterknife:8.4.0',
             'com.android.support.constraint:constraint-layout:1.0.2',
             'com.android.support:support-v4:24.2.1'
     )
     compile("com.mikepenz:materialdrawer:5.6.0") { transitive = true }
+    annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
 
-    apt 'com.jakewharton:butterknife-compiler:8.4.0'
+
 }

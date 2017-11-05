@@ -72,8 +72,8 @@ public final class RecognizeConceptsActivity extends BaseActivity {
 
 
   @BindView(R.id.upload) View upload;
+    @BindView(R.id.progressBar) ProgressBar progressBar;
 
-  @BindView(R.id.progressBar) ProgressBar progressBar;
 
   //@BindView(R.id.imageView2) View imageView2;
   private int progressbarStatus =0;
@@ -92,7 +92,7 @@ public final class RecognizeConceptsActivity extends BaseActivity {
 
      // ImageView imageView = (ImageView)findViewById(R.id.imageView);
     //  Picasso.with(RecognizeConceptsActivity.this).load(R.drawable.background2).fit().into(imageView);
- progressBar.setVisibility(View.GONE);
+      progressBar.setVisibility(View.GONE);
       progressBar.getIndeterminateDrawable().setColorFilter(Color.WHITE, android.graphics.PorterDuff.Mode.MULTIPLY);
   }
 
