@@ -7,7 +7,7 @@ import clarifai2.api.ClarifaiBuilder;
 import clarifai2.api.ClarifaiClient;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
-import timber.log.Timber;
+
 
 import java.util.concurrent.TimeUnit;
 
@@ -43,7 +43,7 @@ public class App extends Application {
             // to the (publicly-viewable) Android log
             .addInterceptor(new HttpLoggingInterceptor(new HttpLoggingInterceptor.Logger() {
               @Override public void log(String logString) {
-                Timber.e(logString);
+
               }
             }).setLevel(HttpLoggingInterceptor.Level.BODY))
             .build()
@@ -52,7 +52,7 @@ public class App extends Application {
     super.onCreate();
 
     // Initialize our logging
-    Timber.plant(new Timber.DebugTree());
+
   }
 
   @NonNull
