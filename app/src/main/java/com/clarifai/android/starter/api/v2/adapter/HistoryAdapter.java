@@ -14,6 +14,7 @@ import com.clarifai.android.starter.api.v2.HistoryDataSource;
 import com.clarifai.android.starter.api.v2.R;
 import com.squareup.picasso.Picasso;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 
 /**
@@ -81,7 +82,12 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.HistoryV
         public void bindHistory(Uri uri,Context context){
          //   textView = (TextView)itemView.findViewById(R.id.textView);
             imageView = (ImageView)itemView.findViewById(R.id.imageView);
-            Picasso.with(context).load(uri).into(imageView);
+              String suri ="InputStream stream = getContentResolver().openInputStream(uri)";
+
+           imageView.setImageURI(uri);
+            Uri suri2 = Uri.parse(suri);
+         //   Picasso.with(context).load(uri).resize(600, 200).into(imageView);
+
         }
     }
 }

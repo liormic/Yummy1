@@ -57,12 +57,12 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     }
 
 
-    public void addUrl(Uri uri){
+    public void addUrl(String uri){
 
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
-        values.put(KEY_NAME, uri.toString()); // Uri value
+        values.put(KEY_NAME, uri); // Uri value
      //   values.put(KEY_DATE, date); // Uri value
 
         // Inserting Row

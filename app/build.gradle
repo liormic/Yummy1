@@ -30,6 +30,7 @@ android {
     lintOptions { lintConfig rootProject.file('gradle/lint.xml') }
     // needed to suppress Okio's lint errors
 }
+
 dependencies {
     compile(
             "com.android.support:appcompat-v7:24.2.1",
@@ -39,15 +40,17 @@ dependencies {
             "com.clarifai.clarifai-api2:core:2.0.2",
 
             // For logging our HTTP outbound + inbound data
-             'com.jakewharton:butterknife:8.8.1',
+
             "com.squareup.okhttp3:logging-interceptor:3.4.1",
             'com.android.support:cardview-v7:21.0.+',
             // For runtime permissions on Marshmallow and above
             "io.reactivex:rxjava:1.1.10",
             "com.tbruyelle.rxpermissions:rxpermissions:0.7.1@aar",
+            'com.jakewharton:butterknife:8.8.1',
 
             'com.squareup.picasso:picasso:2.5.2',
             'com.android.support:cardview-v7:24.2.1',
+            'com.jakewharton:butterknife:8.4.0',
             'com.android.support.constraint:constraint-layout:1.0.2',
             'com.android.support:support-v4:24.2.1'
     )
@@ -56,3 +59,6 @@ dependencies {
 
 
 }
+
+apply plugin: 'announce'
+apply plugin: 'project-report'

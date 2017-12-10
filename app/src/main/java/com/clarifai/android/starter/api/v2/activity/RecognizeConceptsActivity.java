@@ -5,6 +5,7 @@ import android.content.CursorLoader;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -154,58 +155,43 @@ public final class RecognizeConceptsActivity extends BaseActivity {
 
 
     @Override protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-      if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
-          Bitmap photo = (Bitmap) data.getExtras().get("data");
-          String table = "imageUrls";
-          // CALL THIS METHOD TO GET THE URI FROM THE BITMAP
-          //Uri tempUri = getImageUri(getApplicationContext(), photo);
-          try {
+        if (resultCode != RESULT_OK) {
+            return;
+        }
+        switch (requestCode) {
+            case PICK_IMAGE:
+                data.putExtra("id", "ACTION_PICK_IMAGE");
+                byte[] imageBytes = ClarifaiUtil.retrieveSelectedImage(this, data);
+                if (imageBytes != null) {
+                    onImagePicked(imageBytes);
+                }
+                break;
 
-              byte[] imageBytes2 = ClarifaiUtil.retrieveSelectedImage(this, data);
-              BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(photoFile));
-              bos.write(imageBytes2);
-              bos.flush();
-              bos.close();
-          } catch (Exception e) {
-              e.printStackTrace();
-          }
+            case REQUEST_IMAGE_CAPTURE:
+                data.putExtra("id", "REQUEST_IMAGE_CAPTURE");
+                byte[] imageBytes2 = ClarifaiUtil.retrieveSelectedImage(this, data);
+                if (imageBytes2 != null) {
+                    onImagePicked(imageBytes2);
+                }
+                Bitmap bitmap = null;
+                Cursor cursor = RecognizeConceptsActivity.this.getContentResolver().query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                        new String[]{MediaStore.Images.Media.DATA, MediaStore.Images.Media.DATE_ADDED,
+                                MediaStore.Images.ImageColumns.ORIENTATION}, MediaStore.Images.Media.DATE_ADDED,
+                        null, "date_added DESC");
+                if (cursor != null && cursor.moveToFirst()) {
+                    Uri uri = Uri.parse(cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA)));
 
-          if (photoFile != null) {
-              Uri photoURI = FileProvider.getUriForFile(this,
-                      "com.clarifai.android.fileprovider",
-                      photoFile);
+                    String photoPath = uri.toString();
+                    cursor.close();
+                    if (photoPath != null) {
+                        bitmap = BitmapFactory.decodeFile(photoPath);
+                        saveImageInDB(photoPath);
 
-              String uri;
-              uri = photoFile.getAbsolutePath();
-              photoURI = Uri.parse(mCurrentPhotoPath);
-              if (null != photoURI) {
-
-                  // Saving to Database...
-                  saveImageInDB(photoURI);
-
-              }
-          }
-
-
-          switch (requestCode) {
-              case PICK_IMAGE:
-                  data.putExtra("id", "ACTION_PICK_IMAGE");
-                  byte[] imageBytes = ClarifaiUtil.retrieveSelectedImage(this, data);
-                  if (imageBytes != null) {
-                      onImagePicked(imageBytes);
-                  }
-                  break;
-
-              case REQUEST_IMAGE_CAPTURE:
-                  data.putExtra("id", "REQUEST_IMAGE_CAPTURE");
-                  byte[] imageBytes2 = ClarifaiUtil.retrieveSelectedImage(this, data);
-                  if (imageBytes2 != null) {
-                      onImagePicked(imageBytes2);
-                  }
-                  break;
-          }
-      }
-  }
+                        break;
+                    }
+                }
+        }
+    }
 
   private void onImagePicked(@NonNull final byte[] imageBytes) {
     // Now we will upload our image to the Clarifai API
@@ -214,7 +200,7 @@ public final class RecognizeConceptsActivity extends BaseActivity {
     // Make sure we don't show a list of old concepts while the image is being uploaded
     //adapter.setData(Collections.<Concept>emptyList());
 
-    new AsyncTask<Void, Void, ClarifaiResponse<List<ClarifaiOutput<Concept>>>>() {
+    new  AsyncTask<Void, Void, ClarifaiResponse<List<ClarifaiOutput<Concept>>>>() {
       @Override protected ClarifaiResponse<List<ClarifaiOutput<Concept>>> doInBackground(Void... params) {
         // The default Clarifai model that identifies concepts in images
         final ConceptModel foodModel = App.get().clarifaiClient().getDefaultModels().foodModel();
@@ -245,7 +231,7 @@ public final class RecognizeConceptsActivity extends BaseActivity {
       //  imageView.setImageBitmap(BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length));
       }
 
-      private void showErrorSnackbar(@StringRes int errorString) {
+      private  void  showErrorSnackbar(@StringRes int errorString) {
 
           View parentLayout= findViewById (android.R.id.content);
         Snackbar.make(
@@ -303,14 +289,14 @@ public final class RecognizeConceptsActivity extends BaseActivity {
 
 
 
-    Boolean saveImageInDB(Uri selectedImageUri) {
+    Boolean saveImageInDB(String selectedImage) {
 
 
-             databaseHandler = new DatabaseHandler(getApplicationContext());
+             databaseHandler = new DatabaseHandler(RecognizeConceptsActivity.this);
          databaseHandler.getWritableDatabase();
            //InputStream iStream = getContentResolver().openInputStream(selectedImageUri);
             String date = "date";
-            databaseHandler.addUrl(selectedImageUri);
+            databaseHandler.addUrl(selectedImage);
             databaseHandler.close();
             return true;
 
@@ -341,10 +327,10 @@ public final class RecognizeConceptsActivity extends BaseActivity {
     private void processdata(@NonNull List<Concept> concepts){
     this.concepts = concepts;
     String text = concepts.get(0).name();
-    Intent intent = new Intent(getApplicationContext(), RecepieActivity.class);
+    Intent intent = new Intent(RecognizeConceptsActivity.this, RecepieActivity.class);
     intent.putExtra("ProductName",text);
 
-    getApplicationContext().startActivity(intent);
+        RecognizeConceptsActivity.this.startActivity(intent);
 
   }
 }
