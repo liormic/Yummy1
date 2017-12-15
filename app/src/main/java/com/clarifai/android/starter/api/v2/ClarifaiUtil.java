@@ -6,6 +6,7 @@ import android.content.ContextWrapper;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -29,10 +30,12 @@ public final class ClarifaiUtil {
    * @param data
    * @return
    */
+
   @Nullable
   public static byte[] retrieveSelectedImage(@NonNull Context context, @NonNull Intent data) {
     InputStream inStream = null;
     Bitmap bitmap = null;
+    ImageCreator imageCreator = new ImageCreator( null,bitmap);
     String id = null;
     Bundle bundle = data.getExtras();
     if (bundle != null) {
@@ -44,7 +47,10 @@ public final class ClarifaiUtil {
         try {
 
           inStream = context.getContentResolver().openInputStream(data.getData());
+
           bitmap = BitmapFactory.decodeStream(inStream);
+          String imgPath = imageCreator.getImageUri(context,bitmap);
+          imageCreator.saveImageInDB(imgPath,context);
           final ByteArrayOutputStream outStream = new ByteArrayOutputStream();
           bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outStream);
           return outStream.toByteArray();
@@ -65,12 +71,26 @@ public final class ClarifaiUtil {
         }
 
       case "REQUEST_IMAGE_CAPTURE":
+
         try {
 
-          Bundle extras = data.getExtras();
-          bitmap = (Bitmap) extras.get("data");
-          final ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+
+          // Bundle extras = data.getExtras();
+          String path = (String) bundle.get("data");
+          Uri uri = Uri.parse(path);
+
+              bitmap = imageCreator.createBitmapFromContentResolver(uri, context);
+              //BitmapFactory.Options options = new BitmapFactory.Options();
+              // options.inJustDecodeBounds = false;
+
+              //bitmap = BitmapFactory.decodeFile(path,options);
+              String imgPath = imageCreator.getImageUri(context, bitmap);
+              imageCreator.saveImageInDB(imgPath, context);
+
+
+           final ByteArrayOutputStream outStream = new ByteArrayOutputStream();
           bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outStream);
+
           return outStream.toByteArray();
         } finally {
           if (inStream != null) {

@@ -1,5 +1,6 @@
 package com.clarifai.android.starter.api.v2;
 
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -13,6 +14,7 @@ import com.clarifai.android.starter.api.v2.activity.BaseActivity;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -25,16 +27,17 @@ public class ImageCreator   extends BaseActivity {
 
     File file;
     Bitmap bitmap;
-    public ImageCreator(File file,Bitmap bitmap){
+
+    public ImageCreator(File file, Bitmap bitmap) {
 
         this.file = file;
         this.bitmap = bitmap;
 
     }
 
-    public  Bitmap createBitmapFromPath(String photoFileabspath) {
+    public Bitmap createBitmapFromPath(String photoFileabspath) {
         Bitmap bitmap = BitmapFactory.decodeFile(photoFileabspath);
-    return   bitmap;
+        return bitmap;
     }
 
     String mCurrentPhotoPath;
@@ -78,8 +81,7 @@ public class ImageCreator   extends BaseActivity {
     }
 
 
-
-    Boolean saveImageInDB(String selectedImage, Context context) {
+        public boolean saveImageInDB(String selectedImage, Context context) {
 
 
         DatabaseHandler databaseHandler = new DatabaseHandler(context);
@@ -90,6 +92,41 @@ public class ImageCreator   extends BaseActivity {
         databaseHandler.close();
         return true;
 
+    }
+
+
+    public Bitmap createBitmapFromContentResolver(Uri photoUri,Context context) {
+        BitmapFactory.Options bmOptions = new BitmapFactory.Options();
+        bmOptions.inJustDecodeBounds = true;
+        ContentResolver cr = context.getContentResolver();
+        InputStream input = null;
+        InputStream input1 = null;
+        try {
+            input = cr.openInputStream(photoUri);
+            BitmapFactory.decodeStream(input, null, bmOptions);
+            if (input != null) {
+                input.close();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
+        int photoW = bmOptions.outWidth;
+        int photoH = bmOptions.outHeight;
+        Bitmap takenImage = null;
+        try {
+            input1 = cr.openInputStream(photoUri);
+            takenImage = BitmapFactory.decodeStream(input1);
+
+            if (input1 != null) {
+                input1.close();
+
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return takenImage;
     }
 
 }
