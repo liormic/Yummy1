@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools.replace="http://schemas.android.com/apk/res-auto"
     package="com.clarifai.android.starter.api.v2">
 
     <uses-permission android:name="android.permission.INTERNET" />
@@ -14,7 +15,7 @@
         android:name=".App"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
-        android:label="Yummy!"
+
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
@@ -35,9 +36,12 @@
             android:label="@string/title_activity_history"
             android:theme="@style/AppTheme"></activity>
 
+
+
+
         <provider
             android:name="android.support.v4.content.FileProvider"
-            android:authorities="com.clarifai.android.fileprovider"
+            android:authorities="com.clarifai.android.starter.api.v2.fileprovider"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data
@@ -45,9 +49,8 @@
                 android:resource="@xml/file_paths"></meta-data>
         </provider>
 
-
-
-
     </application>
+
+
 
 </manifest>

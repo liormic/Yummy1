@@ -43,7 +43,7 @@ public class History extends AppCompatActivity {
         recyclerView.setAdapter(adapter);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
-
+        databaseHandler.close();
 
             }
 

@@ -1,11 +1,9 @@
 package com.clarifai.android.starter.api.v2.activity;
 
 import android.content.Context;
-import android.content.CursorLoader;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -20,17 +18,20 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.content.FileProvider;
 import android.util.Log;
 import android.view.View;
+import android.view.animation.AlphaAnimation;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 
 import com.clarifai.android.starter.api.v2.App;
 import com.clarifai.android.starter.api.v2.ClarifaiUtil;
 import com.clarifai.android.starter.api.v2.DatabaseHandler;
+import com.clarifai.android.starter.api.v2.ImageCreator;
 import com.clarifai.android.starter.api.v2.R;
 import com.clarifai.android.starter.api.v2.adapter.RecognizeConceptsAdapter;
 
-import java.io.BufferedOutputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -48,102 +49,94 @@ import clarifai2.dto.prediction.Concept;
 
 public final class RecognizeConceptsActivity extends BaseActivity {
 
-  @NonNull private List<Concept> concepts = new ArrayList<>();
+    @NonNull
+    private List<Concept> concepts = new ArrayList<>();
     File photoFile = null;
-
+    String photoFileabspath;
+    RelativeLayout activity_recognize;
+    LinearLayout processingLayout;
     Context context;
-  public static final int PICK_IMAGE = 100;
-  private static final String TAG ="concepttag" ;
-  Snackbar snackbar;
-
-
+    public static final int PICK_IMAGE = 100;
+    private static final String TAG = "concepttag";
+    Snackbar snackbar;
+    private String selectedImagePath;
     DatabaseHandler databaseHandler;
+    static final int REQUEST_IMAGE_CAPTURE = 1;
+    AlphaAnimation inAnimation;
+    AlphaAnimation outAnimation;
+    @BindView(R.id.upload)
+    View upload;
+    @BindView(R.id.progressBar)
+    ProgressBar progressBar;
+    RelativeLayout progressBarHolder;
+    private byte[] imageBytes2;
+    //@BindView(R.id.imageView2) View imageView2;
+    private int progressbarStatus = 0;
+    private Handler handler = new Handler();
+    private Uri photoURI;
+    @BindView(R.id.Snap)
+    View snap;
+
+    @NonNull
+    private final RecognizeConceptsAdapter adapter = new RecognizeConceptsAdapter();
+
+    @Override
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+         progressBar.setVisibility(View.GONE);
+        progressBar.getIndeterminateDrawable().setColorFilter(Color.WHITE, android.graphics.PorterDuff.Mode.MULTIPLY);
+        activity_recognize = (RelativeLayout) findViewById(R.id.activity_recognize);
+        progressBarHolder = (RelativeLayout) findViewById(R.id.progressBarHolder);
+        processingLayout = (LinearLayout) findViewById(R.id.processing_layout);
+    }
 
 
-  // the list of results that were returned from the API
- // @BindView(R.id.resultsList) RecyclerView resultsList;
+    @OnClick(R.id.Snap)
+    void dispatchTakePictureIntent(View v) {
+        ImageCreator img;
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+
+        takePictureIntent.putExtra("id", "ACTION_IMAGE_CAPTURE");
+
+        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+            //Create the File where the photo should go
+            File photoFile = null;
+            try {
+                photoFile = createImageFile();
+                photoFileabspath = photoFile.getAbsolutePath();
+            } catch (IOException ex) {
+                // Error occurred while creating the File
+
+            }
+            // Continue only if the File was successfully created
+            if (photoFile != null) {
+                photoURI = FileProvider.getUriForFile(this,
+                        "com.clarifai.android.starter.api.v2.fileprovider",
+                        photoFile);
+
+                String suri = photoURI.toString();
+                // galleryAddPic();
+                //selectedImagePath = getRealPathFromURI(photoURI);
 
 
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
 
-  // switches between the text prompting the user to hit the FAB, and the loading spinner
-  //@BindView(R.id.switcher) ViewSwitcher switcher;
-
-  // the FAB that the user clicks to select an image
- // @BindView(R.id.fab) View fab;
+                startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
 
 
-  @BindView(R.id.upload) View upload;
-    @BindView(R.id.progressBar) ProgressBar progressBar;
+            }
 
 
-  //@BindView(R.id.imageView2) View imageView2;
-  private int progressbarStatus =0;
-  private Handler handler  = new Handler();
+        }
 
-    @BindView(R.id.Snap) View snap;
+    }
 
-  @NonNull private final RecognizeConceptsAdapter adapter = new RecognizeConceptsAdapter();
-
-  @Override protected void onCreate(@Nullable Bundle savedInstanceState) {
-    super.onCreate(savedInstanceState);
-
-   // Picasso.with(RecognizeConceptsActivity.this).load(R.drawable.logo2).resize(230,230).centerCrop().into((ImageView) imageView2);
-    //Picasso.with(RecognizeConceptsActivity.this).load(R.drawable.snap7).resize(300,300).into((ImageView) snap);
-   //   Picasso.with(RecognizeConceptsActivity.this).load(R.drawable.ic_photo_gallery).resize(300,300).into((ImageView) upload);
-
-     // ImageView imageView = (ImageView)findViewById(R.id.imageView);
-    //  Picasso.with(RecognizeConceptsActivity.this).load(R.drawable.background2).fit().into(imageView);
-      progressBar.setVisibility(View.GONE);
-      progressBar.getIndeterminateDrawable().setColorFilter(Color.WHITE, android.graphics.PorterDuff.Mode.MULTIPLY);
-  }
-
-  @Override protected void onStart() {
-
-    super.onStart();
-
-
-      //VideoView videoview = (VideoView) findViewById(R.id.videoView2);
-     //Uri uri = Uri.parse("android.resource://"+getPackageName()+"/"+R.raw.bac);
-     // videoview.setVideoURI(uri);
-
-      //videoview.start();
-   // resultsList.setLayoutManager(new LinearLayoutManager(this));
-
-    //resultsList.setAdapter(adapter);
-  }
-
-
-  static final int REQUEST_IMAGE_CAPTURE = 1;
-
-  @OnClick(R.id.Snap)
-  void dispatchTakePictureIntent(View v) {
-      Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-      takePictureIntent.putExtra("id", "ACTION_IMAGE_CAPTURE");
-
-
-
-      try {
-          photoFile = createImageFile();
-      } catch (IOException ex) {
-
-      }
-      // Continue only if the File was successfully created
-
-          if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
-              startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
-
-
-          }
-
-  }
-
-  @OnClick(R.id.upload)
-  void pickImage(View v) {
-    Intent pickImageIntent = new Intent(Intent.ACTION_PICK).setType("image/*");
-    startActivityForResult(pickImageIntent, PICK_IMAGE);
-  }
-
-
+    @OnClick(R.id.upload)
+    void pickImage(View v) {
+        Intent pickImageIntent = new Intent(Intent.ACTION_PICK).setType("image/*");
+        startActivityForResult(pickImageIntent, PICK_IMAGE);
+    }
 
     @OnClick(R.id.Layouthistory)
     void History(View v) {
@@ -154,7 +147,9 @@ public final class RecognizeConceptsActivity extends BaseActivity {
     }
 
 
-    @Override protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    @Override
+    protected void onActivityResult(final int requestCode, int resultCode, final Intent data) {
+
         if (resultCode != RESULT_OK) {
             return;
         }
@@ -168,141 +163,194 @@ public final class RecognizeConceptsActivity extends BaseActivity {
                 break;
 
             case REQUEST_IMAGE_CAPTURE:
-                data.putExtra("id", "REQUEST_IMAGE_CAPTURE");
-                byte[] imageBytes2 = ClarifaiUtil.retrieveSelectedImage(this, data);
+                setBusy(true);
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Bundle bundle = new Bundle();
+                        proceesImage();
+                    }
+                });
+
+                break;
+        }
+
+    }
+
+
+    // Intent ImageResolverService = new Intent(this, ProcessImageIntentService.class);
+    // mageResolverService.putExtra("data", String.valueOf(photoURI));
+    //startService(ImageResolverService);
+
+
+    private void proceesImage() {
+        new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected void onPostExecute(Void aVoid) {
+
                 if (imageBytes2 != null) {
                     onImagePicked(imageBytes2);
                 }
-                Bitmap bitmap = null;
-                Cursor cursor = RecognizeConceptsActivity.this.getContentResolver().query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                        new String[]{MediaStore.Images.Media.DATA, MediaStore.Images.Media.DATE_ADDED,
-                                MediaStore.Images.ImageColumns.ORIENTATION}, MediaStore.Images.Media.DATE_ADDED,
-                        null, "date_added DESC");
-                if (cursor != null && cursor.moveToFirst()) {
-                    Uri uri = Uri.parse(cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA)));
 
-                    String photoPath = uri.toString();
-                    cursor.close();
-                    if (photoPath != null) {
-                        bitmap = BitmapFactory.decodeFile(photoPath);
-                        saveImageInDB(photoPath);
 
-                        break;
-                    }
+            }
+
+            @Override
+            protected Void doInBackground(Void... voids) {
+
+
+                Bundle bundle = new Bundle();
+
+                bundle.putString("data", String.valueOf(photoURI));
+                bundle.putCharSequence("id", "REQUEST_IMAGE_CAPTURE");
+                final Intent intent = new Intent();
+                intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                intent.putExtras(bundle);
+
+                imageBytes2 = ClarifaiUtil.retrieveSelectedImage(getApplicationContext(), intent);
+
+                return null;
+            }
+
+
+        }.execute();
+    }
+
+
+    private void onImagePicked(@NonNull final byte[] imageBytes) {
+        // Now we will upload our image to the Clarifai API
+
+
+        // Make sure we don't show a list of old concepts while the image is being uploaded
+        //adapter.setData(Collections.<Concept>emptyList());
+
+        new AsyncTask<Void, Void, ClarifaiResponse<List<ClarifaiOutput<Concept>>>>() {
+
+            @Override
+            protected void onPreExecute() {
+
+                super.onPreExecute();
+
+
+            }
+
+            @Override
+
+            protected ClarifaiResponse<List<ClarifaiOutput<Concept>>> doInBackground(Void... params) {
+                // The default Clarifai model that identifies concepts in images
+                final ConceptModel foodModel = App.get().clarifaiClient().getDefaultModels().foodModel();
+
+                // Use this model to predict, with the image that the user just selected as the input
+                return foodModel.predict()
+                        .withInputs(ClarifaiInput.forImage(ClarifaiImage.of(imageBytes)))
+                        .executeSync();
+            }
+
+            @Override
+            protected void onPostExecute(ClarifaiResponse<List<ClarifaiOutput<Concept>>> response) {
+                setBusy(false);
+                if (!response.isSuccessful()) {
+                    showErrorSnackbar(R.string.error_while_contacting_api);
+                    return;
                 }
+                final List<ClarifaiOutput<Concept>> predictions = response.get();
+                Log.d(TAG, String.valueOf(predictions.get(0)));
+
+
+                if (predictions.isEmpty()) {
+                    showErrorSnackbar(R.string.no_results_from_api);
+                    return;
+                }
+
+                // adapter.setData(predictions.get(0).data());
+                processdata(predictions.get(0).data());
+                //  imageView.setImageBitmap(BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length));
+            }
+
+            private void showErrorSnackbar(@StringRes int errorString) {
+
+                View parentLayout = findViewById(android.R.id.content);
+                Snackbar.make(
+                        parentLayout,
+                        errorString,
+                        Snackbar.LENGTH_SHORT
+                ).show();
+            }
+        }.execute();
+    }
+
+    @Override
+    protected int layoutRes() {
+        return R.layout.activity_recognize;
+    }
+
+    private void setBusy(final boolean busy) {
+
+        // final View Layout= findViewById (android.R.id.content);
+
+        //   switcher.setDisplayedChild(busy ? 1 : 0);
+        //fab.setEnabled(!busy);
+        // }
+        //});
+        if (busy == true) {
+             progressBar.setVisibility(View.VISIBLE);
+            //activity_recognize.setVisibility(View.GONE);
+            // setContentView(R.layout.processing_layout);
+            //     processingLayout.setVisibility(View.VISIBLE);
+
+           // final AnimatedDotsView red = (AnimatedDotsView) findViewById(R.id.adv_2);
+            //red.startAnimation();
+            inAnimation = new AlphaAnimation(0f, 1f);
+            inAnimation.setDuration(2000);
+
+            progressBarHolder.setAnimation(inAnimation);
+            progressBarHolder.setVisibility(View.VISIBLE);
+
+        } else {
+                progressBar.setVisibility(View.GONE);
+
+            outAnimation = new AlphaAnimation(1f, 0f);
+            outAnimation.setDuration(200);
+            progressBarHolder.setAnimation(outAnimation);
+            progressBarHolder.setVisibility(View.GONE);
+
+
         }
     }
 
-  private void onImagePicked(@NonNull final byte[] imageBytes) {
-    // Now we will upload our image to the Clarifai API
-    setBusy(true);
-
-    // Make sure we don't show a list of old concepts while the image is being uploaded
-    //adapter.setData(Collections.<Concept>emptyList());
-
-    new  AsyncTask<Void, Void, ClarifaiResponse<List<ClarifaiOutput<Concept>>>>() {
-      @Override protected ClarifaiResponse<List<ClarifaiOutput<Concept>>> doInBackground(Void... params) {
-        // The default Clarifai model that identifies concepts in images
-        final ConceptModel foodModel = App.get().clarifaiClient().getDefaultModels().foodModel();
-
-        // Use this model to predict, with the image that the user just selected as the input
-        return foodModel.predict()
-            .withInputs(ClarifaiInput.forImage(ClarifaiImage.of(imageBytes)))
-            .executeSync();
-      }
-
-      @Override protected void onPostExecute(ClarifaiResponse<List<ClarifaiOutput<Concept>>> response) {
-        setBusy(false);
-        if (!response.isSuccessful()) {
-          showErrorSnackbar(R.string.error_while_contacting_api);
-          return;
-        }
-        final List<ClarifaiOutput<Concept>> predictions = response.get();
-        Log.d(TAG,String.valueOf(predictions.get(0)));
-
-
-        if (predictions.isEmpty()) {
-          showErrorSnackbar(R.string.no_results_from_api);
-          return;
-        }
-
-       // adapter.setData(predictions.get(0).data());
-        processdata(predictions.get(0).data());
-      //  imageView.setImageBitmap(BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length));
-      }
-
-      private  void  showErrorSnackbar(@StringRes int errorString) {
-
-          View parentLayout= findViewById (android.R.id.content);
-        Snackbar.make(
-                parentLayout ,
-            errorString,
-            Snackbar.LENGTH_SHORT
-        ).show();
-      }
-    }.execute();
-  }
-
-  @Override protected int layoutRes() { return R.layout.activity_recognize; }
-
-  private void setBusy(final boolean busy) {
-
-    // final View Layout= findViewById (android.R.id.content);
-    //runOnUiThread(new Runnable() {
-    //  @Override public void run() {
-    //   switcher.setDisplayedChild(busy ? 1 : 0);
-    //fab.setEnabled(!busy);
-    // }
-    //});
-    if(busy==true) {
-      progressBar.setVisibility(View.VISIBLE);
-    }else{
-      progressBar.setVisibility(View.GONE);
-    }
-
-
-    }
 
 
 
 
-    public Uri getImageUri(Context inContext, Bitmap inImage) {
-       // ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-       //inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
-        String path = MediaStore.Images.Media.insertImage(inContext.getContentResolver(), inImage, "Title", null);
-        Uri uri = Uri.parse(path);
-        return uri;
-    }
 
     public String getRealPathFromURI(Uri contentURI) {
 
-            String[] proj = { MediaStore.Images.Media.DATA };
-            CursorLoader loader = new CursorLoader(getApplicationContext(), contentURI, proj, null, null, null);
-            Cursor cursor = loader.loadInBackground();
-            int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+        String result;
+        Cursor cursor = getContentResolver().query(contentURI, null, null, null, null);
+        if (cursor == null) { // Source is Dropbox or other similar local file path
+            result = contentURI.getPath();
+        } else {
             cursor.moveToFirst();
-            String result = cursor.getString(column_index);
+            int idx = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA);
+            result = cursor.getString(idx);
             cursor.close();
-            return result;
+        }
+        return result;
     }
-
-
 
 
     Boolean saveImageInDB(String selectedImage) {
 
 
-             databaseHandler = new DatabaseHandler(RecognizeConceptsActivity.this);
-         databaseHandler.getWritableDatabase();
-           //InputStream iStream = getContentResolver().openInputStream(selectedImageUri);
-            String date = "date";
-            databaseHandler.addUrl(selectedImage);
-            databaseHandler.close();
-            return true;
+        databaseHandler = new DatabaseHandler(RecognizeConceptsActivity.this);
+        databaseHandler.getWritableDatabase();
+        //\\InputStream iStream = getContentResolver().openInputStream(selectedImageUri);
+        String date = "date";
+        databaseHandler.addUrl(selectedImage);
+        databaseHandler.close();
+        return true;
 
-        }
-
-
+    }
 
 
     String mCurrentPhotoPath;
@@ -324,13 +372,32 @@ public final class RecognizeConceptsActivity extends BaseActivity {
     }
 
 
-    private void processdata(@NonNull List<Concept> concepts){
-    this.concepts = concepts;
-    String text = concepts.get(0).name();
-    Intent intent = new Intent(RecognizeConceptsActivity.this, RecepieActivity.class);
-    intent.putExtra("ProductName",text);
+    private void processdata(@NonNull List<Concept> concepts) {
+        this.concepts = concepts;
+        String text = concepts.get(0).name();
+        Intent intent = new Intent(RecognizeConceptsActivity.this, RecepieActivity.class);
+        intent.putExtra("ProductName", text);
 
         RecognizeConceptsActivity.this.startActivity(intent);
 
-  }
-}
+    }
+
+
+    private void galleryAddPic() {
+        Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+        File f = new File(mCurrentPhotoPath);
+        Uri contentUri = Uri.fromFile(f);
+        mediaScanIntent.setData(contentUri);
+        this.sendBroadcast(mediaScanIntent);
+    }
+
+    public String getImageUri(Context inContext, Bitmap inImage) {
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        inImage.compress(Bitmap.CompressFormat.JPEG, 80, bytes);
+        String path = MediaStore.Images.Media.insertImage(inContext.getContentResolver(), inImage, "Title", null);
+        return path;
+    }
+
+        }
+
+

@@ -1,8 +1,8 @@
 <resources>
     <string name="clarifai_id">aOLZlZ8mkSXied8Z0TzVfbqoN5FpmEapZ-6slfUh</string>
     <string name="clarifai_secret">kyO0vc95d1gqkxpafBT0ensZ_cTDE4Lw-DCUfKO5</string>
+    <string name="app_name">Yummmy!</string>
 
-    <string name="app_name">Yummy!</string>
 
     <string name="error_external_storage_permission_not_granted">You must accept this permission so we can upload your images!</string>
 

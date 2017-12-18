@@ -49,8 +49,8 @@ public final class ClarifaiUtil {
           inStream = context.getContentResolver().openInputStream(data.getData());
 
           bitmap = BitmapFactory.decodeStream(inStream);
-          String imgPath = imageCreator.getImageUri(context,bitmap);
-          imageCreator.saveImageInDB(imgPath,context);
+          String imgPath = imageCreator.getImageUri(context, bitmap);
+          imageCreator.saveImageInDB(imgPath, context);
           final ByteArrayOutputStream outStream = new ByteArrayOutputStream();
           bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outStream);
           return outStream.toByteArray();
@@ -75,24 +75,28 @@ public final class ClarifaiUtil {
         try {
 
 
-          // Bundle extras = data.getExtras();
-          String path = (String) bundle.get("data");
-          Uri uri = Uri.parse(path);
+              // Bundle extras = data.getExtras();
+              String path = (String) bundle.get("data");
+              Uri uri = Uri.parse(path);
 
               bitmap = imageCreator.createBitmapFromContentResolver(uri, context);
-              //BitmapFactory.Options options = new BitmapFactory.Options();
-              // options.inJustDecodeBounds = false;
-
+              BitmapFactory.Options options = new BitmapFactory.Options();
+              options.inJustDecodeBounds = false;
+              Bitmap.createScaledBitmap(bitmap, 100, 100, false);
               //bitmap = BitmapFactory.decodeFile(path,options);
               String imgPath = imageCreator.getImageUri(context, bitmap);
               imageCreator.saveImageInDB(imgPath, context);
+              final ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+              bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outStream);
 
 
-           final ByteArrayOutputStream outStream = new ByteArrayOutputStream();
-          bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outStream);
+              return outStream.toByteArray();
 
-          return outStream.toByteArray();
-        } finally {
+
+
+        } finally
+
+        {
           if (inStream != null) {
             try {
               inStream.close();
@@ -103,7 +107,10 @@ public final class ClarifaiUtil {
             bitmap.recycle();
           }
 
+
         }
+
+
     }
 
     return null;

@@ -23,7 +23,7 @@ import java.util.Date;
  */
 
 public class ImageCreator   extends BaseActivity {
-
+    Bitmap takenImage = null;
 
     File file;
     Bitmap bitmap;
@@ -81,7 +81,7 @@ public class ImageCreator   extends BaseActivity {
     }
 
 
-        public boolean saveImageInDB(String selectedImage, Context context) {
+    public boolean saveImageInDB(String selectedImage, Context context) {
 
 
         DatabaseHandler databaseHandler = new DatabaseHandler(context);
@@ -95,38 +95,40 @@ public class ImageCreator   extends BaseActivity {
     }
 
 
-    public Bitmap createBitmapFromContentResolver(Uri photoUri,Context context) {
-        BitmapFactory.Options bmOptions = new BitmapFactory.Options();
-        bmOptions.inJustDecodeBounds = true;
-        ContentResolver cr = context.getContentResolver();
-        InputStream input = null;
-        InputStream input1 = null;
-        try {
-            input = cr.openInputStream(photoUri);
-            BitmapFactory.decodeStream(input, null, bmOptions);
-            if (input != null) {
-                input.close();
+    public Bitmap createBitmapFromContentResolver(final Uri photoUri, final Context context) {
+ {
+                BitmapFactory.Options bmOptions = new BitmapFactory.Options();
+                bmOptions.inJustDecodeBounds = true;
+                ContentResolver cr = context.getContentResolver();
+                InputStream input = null;
+                InputStream input1 = null;
+                try {
+                    input = cr.openInputStream(photoUri);
+                    BitmapFactory.decodeStream(input, null, bmOptions);
+                    if (input != null) {
+                        input.close();
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+
+
+
+                try {
+                    input1 = cr.openInputStream(photoUri);
+                    takenImage = BitmapFactory.decodeStream(input1);
+
+                    if (input1 != null) {
+                        input1.close();
+
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
 
-
-        int photoW = bmOptions.outWidth;
-        int photoH = bmOptions.outHeight;
-        Bitmap takenImage = null;
-        try {
-            input1 = cr.openInputStream(photoUri);
-            takenImage = BitmapFactory.decodeStream(input1);
-
-            if (input1 != null) {
-                input1.close();
-
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
         return takenImage;
     }
-
 }

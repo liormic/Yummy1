@@ -5,7 +5,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.net.Uri;
 
 import java.util.ArrayList;
 
@@ -22,10 +21,10 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     // Database Name
     private static final String DATABASE_NAME = "imageUrls";
 
-    // Contacts table name
+
     private static final String TABLE_URLS = "urls";
 
-    // Contacts Table Columns names
+
     private static final String KEY_ID = "id";
     private static final String KEY_NAME = "url_value";
     private static final String KEY_DATE = "url_date";
@@ -41,7 +40,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         String CREATE_URLS_TABLE = "CREATE TABLE " + TABLE_URLS + "("
-                + KEY_ID + " INTEGER PRIMARY KEY," + KEY_NAME + " TEXT,"
+                + KEY_ID + " TEXT," + KEY_NAME + " TEXT,"
                 + KEY_DATE+" TEXT"+")";
         db.execSQL(CREATE_URLS_TABLE);
     }
@@ -76,12 +75,11 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         return super.getWritableDatabase();
     }
 
+
     public ArrayList<HistoryDataSource> retreiveUrls(){
         SQLiteDatabase db = this.getReadableDatabase();
-
-        Cursor cursor = db.query(TABLE_URLS, new String[] { KEY_ID,
-                        KEY_NAME, KEY_DATE },null, null, null, null, null);
-
+        String selectQuery = "SELECT  * FROM " + TABLE_URLS+" ORDER BY "+KEY_NAME+" DESC";
+        Cursor cursor = db.rawQuery(selectQuery,null);
         ArrayList<HistoryDataSource> dataSources = new ArrayList<HistoryDataSource>();
         if (cursor.moveToFirst()) {
             do{
@@ -91,11 +89,11 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         }while (cursor.moveToNext());
 
 
-            cursor.close();
+
 
         }
-
-
+        db.close();
+        cursor.close();
         return dataSources;
 
     }

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:id="@+id/processing_layout"
+    xmlns:custom="http://schemas.android.com/apk/res-auto">
+
+
+
+        <com.github.channguyen.adv.AnimatedDotsView
+            android:id="@+id/adv_2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            custom:adv___dotCount="5"
+            custom:adv___dotBlinkingColor="#FF0000"
+            android:layout_marginTop="40dp"
+            android:layout_gravity="center_horizontal"
+            />
+    </LinearLayout>

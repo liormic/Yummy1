@@ -14,7 +14,6 @@ import com.clarifai.android.starter.api.v2.HistoryDataSource;
 import com.clarifai.android.starter.api.v2.R;
 import com.squareup.picasso.Picasso;
 
-import java.io.InputStream;
 import java.util.ArrayList;
 
 /**
@@ -24,7 +23,7 @@ import java.util.ArrayList;
 public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.HistoryViewHolder>{
     private static final String TAG = "TAG" ;
 //Declaring the array
-   private ArrayList<HistoryDataSource> dataSources = new ArrayList<>();
+   private ArrayList<HistoryDataSource> dataSources ;
 
 
     //Adapter constructor
@@ -45,19 +44,15 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.HistoryV
         HistoryViewHolder viewHolder = new HistoryViewHolder(view);
         return viewHolder;
     }
-
     @Override
     public void onBindViewHolder(HistoryViewHolder holder, int position) {
         String suri =dataSources.get(position).getUrl();
-        Uri uri = Uri.parse(suri);
         Context context=  holder.imageView.getContext();
-        holder.bindHistory(uri,context);
-
+        holder.bindHistory(suri,context);
     }
 
     @Override
     public int getItemCount() {
-
         return dataSources.size();
     }
 
@@ -79,14 +74,13 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.HistoryV
 
         }
 
-        public void bindHistory(Uri uri,Context context){
+        public void bindHistory(String suri, Context context){
          //   textView = (TextView)itemView.findViewById(R.id.textView);
             imageView = (ImageView)itemView.findViewById(R.id.imageView);
-              String suri ="InputStream stream = getContentResolver().openInputStream(uri)";
 
-           imageView.setImageURI(uri);
-            Uri suri2 = Uri.parse(suri);
-         //   Picasso.with(context).load(uri).resize(600, 200).into(imageView);
+            Uri uri = Uri.parse(suri);
+            Picasso.with(context).load(uri).resize(400,400).into(imageView);
+
 
         }
     }
